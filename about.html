@@ -3,19 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>this is my company</title>
     <link rel="stylesheet" href="style.css"/>
   </head>
   <body>
+    <input
+      class="theme-toggle-input"
+      type="checkbox"
+      id="theme-toggle"
+      aria-label="Toggle dark mode"
+    />
     <header class="header">
       <h1>(About)My company</h1>
-      <nav class="links">
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-        <a href="Components">Components</a>
-
-      </nav>
+      <div class="header-controls">
+        <nav class="links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a href="Components">Components</a>
+        </nav>
+        <label
+          class="theme-toggle"
+          for="theme-toggle"
+          aria-label="Toggle dark mode"
+        >
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+        </label>
+      </div>
     </header>
     <main>
       <h2>About Me</h2>
