@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | Registration</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+      }
+
+      main {
+        display: grid;
+        min-height: calc(100vh - 74px);
+        place-items: center;
+        padding: 32px 20px;
+      }
+
+      .registration-card {
+        width: min(100%, 500px);
+        padding: 32px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: 0 12px 36px rgb(17 35 57 / 12%);
+      }
+
+      .registration-card h2 {
+        margin: 0 0 8px;
+        color: var(--text);
+        text-align: center;
+      }
+
+      .intro {
+        margin: 0 0 24px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .registration-form {
+        display: grid;
+        gap: 16px;
+      }
+
+      .form-field {
+        display: grid;
+        gap: 7px;
+      }
+
+      .form-field label {
+        font-weight: 700;
+      }
+
+      .form-field input {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--page-bg);
+        color: var(--text);
+        font: inherit;
+      }
+
+      .form-field input[aria-invalid="true"] {
+        border-color: #c62828;
+      }
+
+      .form-field input[type="email"],
+      .form-field input[type="password"],
+      .form-field input[inputmode="numeric"] {
+        direction: ltr;
+        text-align: left;
+      }
+
+      .error-message {
+        min-height: 1.2em;
+        margin: 0;
+        color: #c62828;
+        font-size: 0.9rem;
+      }
+
+      .registration-form button {
+        width: 100%;
+        margin-top: 4px;
+      }
+
+      .form-status {
+        margin: 0;
+        color: var(--success-text);
+        text-align: center;
+      }
+
+      @media (max-width: 480px) {
+        .registration-card {
+          padding: 24px 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1>Create Account</h1>
+      <nav class="links" aria-label="Main Navigation">
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact Us</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="registration-card" aria-labelledby="form-title">
+        <h2 id="form-title">Registration Form</h2>
+        <p class="intro">Enter your details to create a new account.</p>
+
+        <form class="registration-form" id="registration-form" novalidate>
+          <div class="form-field">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" />
+            <p class="error-message" id="name-error" aria-live="polite"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email Address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              dir="ltr"
+            />
+            <p class="error-message" id="email-error" aria-live="polite"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              dir="ltr"
+            />
+            <p class="error-message" id="password-error" aria-live="polite"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="confirm-password">Confirm Password</label>
+            <input
+              id="confirm-password"
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              dir="ltr"
+            />
+            <p
+              class="error-message"
+              id="confirm-password-error"
+              aria-live="polite"
+            ></p>
+          </div>
+
+          <div class="form-field">
+            <label for="age">Age</label>
+            <input
+              id="age"
+              name="age"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+            />
+            <p class="error-message" id="age-error" aria-live="polite"></p>
+          </div>
+
+          <button type="submit">Sign Up</button>
+          <p
+            class="form-status"
+            id="form-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById("registration-form");
+      const fields = {
+        name: document.getElementById("name"),
+        email: document.getElementById("email"),
+        password: document.getElementById("password"),
+        confirmPassword: document.getElementById("confirm-password"),
+        age: document.getElementById("age"),
+      };
+      const validatedFields = new Set();
+      const statusMessage = document.getElementById("form-status");
+
+      function getError(fieldName) {
+        const value = fields[fieldName].value.trim();
+
+        if (!value) {
+          return "This field is required.";
+        }
+
+        if (fieldName === "email" && !fields.email.validity.valid) {
+          return "Please enter a valid email address.";
+        }
+
+        if (fieldName === "password" && fields.password.value.length < 8) {
+          return "Password must be at least 8 characters.";
+        }
+
+        if (
+          fieldName === "confirmPassword" &&
+          fields.confirmPassword.value !== fields.password.value
+        ) {
+          return "Passwords do not match.";
+        }
+
+        if (fieldName === "age") {
+          const ageText = fields.age.value.trim();
+          const age = Number(ageText);
+          if (
+            !/^\d+$/.test(ageText) ||
+            !Number.isSafeInteger(age) ||
+            age < 1 ||
+            age > 120
+          ) {
+            return "Please enter a valid age between 1 and 120.";
+          }
+        }
+
+        return "";
+      }
+
+      function validateField(fieldName) {
+        const input = fields[fieldName];
+        const error = getError(fieldName);
+        const errorElement = document.getElementById(`${input.id}-error`);
+
+        input.setAttribute("aria-invalid", String(Boolean(error)));
+        input.setAttribute("aria-describedby", errorElement.id);
+        errorElement.textContent = error;
+        return !error;
+      }
+
+      Object.entries(fields).forEach(([fieldName, input]) => {
+        input.addEventListener("input", () => {
+          statusMessage.textContent = "";
+          validatedFields.add(fieldName);
+          validateField(fieldName);
+
+          if (
+            fieldName === "password" &&
+            validatedFields.has("confirmPassword")
+          ) {
+            validateField("confirmPassword");
+          }
+        });
+
+        input.addEventListener("blur", () => {
+          validatedFields.add(fieldName);
+          validateField(fieldName);
+        });
+      });
+
+      form.addEventListener("submit", (event) => {
+        validatedFields.clear();
+        Object.keys(fields).forEach((fieldName) =>
+          validatedFields.add(fieldName),
+        );
+
+        const isValid = Object.keys(fields).map(validateField).every(Boolean);
+        if (!isValid) {
+          event.preventDefault();
+          statusMessage.textContent = "";
+          return;
+        }
+
+        event.preventDefault();
+        statusMessage.textContent = "Data validated successfully!";
+      });
+    </script>
+  </body>
+</html>

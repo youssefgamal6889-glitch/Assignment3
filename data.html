@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>People Directory | Youssef Company</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      main {
+        width: min(100%, 1000px);
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      .directory-card {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: 0 12px 36px rgb(17 35 57 / 10%);
+      }
+
+      .directory-heading {
+        padding: 28px 30px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .directory-heading h2 {
+        margin: 0 0 8px;
+        color: var(--text);
+      }
+
+      .directory-heading p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .directory-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 12px;
+        padding: 20px 30px;
+      }
+
+      .search-field {
+        display: grid;
+        flex: 1 1 240px;
+        gap: 7px;
+        font-weight: 700;
+      }
+
+      .search-field input {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--page-bg);
+        color: var(--text);
+        font: inherit;
+      }
+
+      .sort-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .sort-controls button {
+        min-height: 44px;
+      }
+
+      .sort-controls button[aria-pressed="true"] {
+        background: var(--brand);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      .people-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      .people-table th,
+      .people-table td {
+        padding: 14px 30px;
+        border-top: 1px solid var(--border);
+      }
+
+      .people-table th {
+        background: var(--surface-muted);
+        color: var(--text);
+      }
+
+      .people-table tbody tr:nth-child(even) {
+        background: var(--page-bg);
+      }
+
+      .empty-state {
+        padding: 24px !important;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .result-count {
+        margin: 0;
+        padding: 14px 30px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 600px) {
+        main {
+          padding: 24px 12px;
+        }
+
+        .directory-heading,
+        .directory-controls {
+          padding-right: 18px;
+          padding-left: 18px;
+        }
+
+        .people-table th,
+        .people-table td {
+          padding: 12px 18px;
+        }
+
+        .result-count {
+          padding-right: 18px;
+          padding-left: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <input
+      class="theme-toggle-input"
+      type="checkbox"
+      id="theme-toggle"
+      aria-label="Toggle dark mode"
+    />
+    <header class="header">
+      <h1>People Directory</h1>
+      <div class="header-controls">
+        <nav class="links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a href="component.html">Components</a>
+          <a href="validation.html">Registration</a>
+        </nav>
+        <label
+          class="theme-toggle"
+          for="theme-toggle"
+          aria-label="Toggle dark mode"
+        >
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+        </label>
+      </div>
+    </header>
+
+    <main>
+      <section class="directory-card" aria-labelledby="directory-title">
+        <div class="directory-heading">
+          <h2 id="directory-title">People</h2>
+          <p>Search the directory or sort the records by name or age.</p>
+        </div>
+
+        <div class="directory-controls">
+          <label class="search-field" for="search-input">
+            Search people
+            <input
+              id="search-input"
+              type="search"
+              placeholder="Search by name, email, or city..."
+              autocomplete="off"
+            />
+          </label>
+          <div class="sort-controls" aria-label="Sort records">
+            <button id="sort-name" type="button" aria-pressed="false">
+              Sort by Name
+            </button>
+            <button id="sort-age" type="button" aria-pressed="false">
+              Sort by Age
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="people-table">
+            <caption class="visually-hidden">
+              People directory with name, email, age, and city
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Age</th>
+                <th scope="col">City</th>
+              </tr>
+            </thead>
+            <tbody id="people-rows"></tbody>
+          </table>
+        </div>
+        <p class="result-count" id="result-count" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script>
+      const people = [
+        {
+          name: "Amira Hassan",
+          email: "amira.hassan@example.com",
+          age: 28,
+          city: "Cairo",
+        },
+        {
+          name: "Omar Khaled",
+          email: "omar.khaled@example.com",
+          age: 34,
+          city: "Alexandria",
+        },
+        {
+          name: "Lina Mostafa",
+          email: "lina.mostafa@example.com",
+          age: 22,
+          city: "Giza",
+        },
+        {
+          name: "Youssef Adel",
+          email: "youssef.adel@example.com",
+          age: 41,
+          city: "Luxor",
+        },
+        {
+          name: "Mariam Nabil",
+          email: "mariam.nabil@example.com",
+          age: 30,
+          city: "Aswan",
+        },
+        {
+          name: "Karim Samir",
+          email: "karim.samir@example.com",
+          age: 25,
+          city: "Cairo",
+        },
+      ];
+
+      const rows = document.getElementById("people-rows");
+      const searchInput = document.getElementById("search-input");
+      const resultCount = document.getElementById("result-count");
+      const sortButtons = {
+        name: document.getElementById("sort-name"),
+        age: document.getElementById("sort-age"),
+      };
+      const nameCollator = new Intl.Collator(undefined, {
+        sensitivity: "base",
+      });
+      let sortState = { key: null, direction: 1 };
+
+      function renderPeople() {
+        const query = searchInput.value.trim().toLocaleLowerCase();
+        const filteredPeople = people.filter(({ name, email, city, age }) =>
+          [name, email, city, String(age)].some((value) =>
+            value.toLocaleLowerCase().includes(query),
+          ),
+        );
+
+        if (sortState.key) {
+          filteredPeople.sort((first, second) => {
+            const comparison =
+              sortState.key === "age"
+                ? first.age - second.age
+                : nameCollator.compare(first.name, second.name);
+            return comparison * sortState.direction;
+          });
+        }
+
+        rows.replaceChildren();
+        if (filteredPeople.length === 0) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 4;
+          cell.className = "empty-state";
+          cell.textContent = "No matching people found.";
+          row.append(cell);
+          rows.append(row);
+        } else {
+          filteredPeople.forEach(({ name, email, age, city }) => {
+            const row = document.createElement("tr");
+            [name, email, age, city].forEach((value) => {
+              const cell = document.createElement("td");
+              cell.textContent = value;
+              row.append(cell);
+            });
+            rows.append(row);
+          });
+        }
+
+        resultCount.textContent = `Showing ${filteredPeople.length} of ${people.length} people`;
+      }
+
+      function sortBy(key) {
+        sortState = {
+          key,
+          direction: sortState.key === key ? sortState.direction * -1 : 1,
+        };
+
+        Object.entries(sortButtons).forEach(([buttonKey, button]) => {
+          button.setAttribute("aria-pressed", String(buttonKey === key));
+          button.textContent =
+            buttonKey === key
+              ? `Sort by ${key === "age" ? "Age" : "Name"} ${
+                  sortState.direction === 1 ? "(ascending)" : "(descending)"
+                }`
+              : `Sort by ${buttonKey === "age" ? "Age" : "Name"}`;
+        });
+
+        renderPeople();
+      }
+
+      searchInput.addEventListener("input", renderPeople);
+      sortButtons.name.addEventListener("click", () => sortBy("name"));
+      sortButtons.age.addEventListener("click", () => sortBy("age"));
+
+      renderPeople();
+    </script>
+  </body>
+</html>
